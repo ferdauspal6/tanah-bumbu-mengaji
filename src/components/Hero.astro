@@ -1,47 +1,46 @@
 ---
 interface Props {
+  pretitle?: string;
   headline: string;
+  description?: string;
   subheadline?: string;
   ctaPrimary?: { label: string; href: string };
   ctaSecondary?: { label: string; href: string };
   small?: boolean;
 }
 
-const { headline, subheadline, ctaPrimary, ctaSecondary, small = false } = Astro.props;
+const { pretitle, headline, description, subheadline, ctaPrimary, ctaSecondary, small = false } = Astro.props;
 ---
 
-<section class={`relative bg-primary overflow-hidden ${small ? 'py-16 md:py-20' : 'py-24 md:py-32'}`}>
-  <!-- Islamic geometric pattern overlay -->
-  <div class="absolute inset-0 opacity-[0.03]">
-    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-      <defs>
-        <pattern id="islamic-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-          <path d="M10 0L20 10L10 20L0 10Z" fill="none" stroke="white" stroke-width="0.3"/>
-          <circle cx="10" cy="10" r="3" fill="none" stroke="white" stroke-width="0.2"/>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#islamic-pattern)"/>
-    </svg>
-  </div>
+<section class={`relative overflow-hidden ${small ? 'py-16 md:py-20' : 'py-24 md:py-32'}`}
+  style="background-image: url('/background.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"
+>
+  <!-- Light background fallback -->
+  <div class="absolute inset-0 bg-white/80"></div>
 
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h1 class={`font-heading font-bold text-white ${small ? 'text-3xl md:text-4xl' : 'text-4xl md:text-5xl lg:text-6xl'}`}>
+    {pretitle && (
+      <p class={`font-semibold text-primary uppercase tracking-wider ${small ? 'text-sm' : 'text-sm md:text-base'}`}>
+        {pretitle}
+      </p>
+    )}
+    <h1 class={`font-heading font-bold text-text mt-2 ${small ? 'text-3xl md:text-4xl' : 'text-4xl md:text-5xl lg:text-6xl'}`}>
       {headline}
     </h1>
-    {subheadline && (
-      <p class={`mt-4 text-white/80 max-w-2xl mx-auto ${small ? 'text-base' : 'text-lg md:text-xl'}`}>
-        {subheadline}
+    {(description || subheadline) && (
+      <p class={`mt-6 text-text-muted max-w-3xl mx-auto leading-relaxed ${small ? 'text-base' : 'text-base md:text-lg'}`}>
+        {description || subheadline}
       </p>
     )}
     {(ctaPrimary || ctaSecondary) && (
       <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
         {ctaPrimary && (
-          <a href={ctaPrimary.href} class="px-6 py-3 bg-white text-primary rounded-xl font-semibold hover:bg-white/90 transition-colors">
+          <a href={ctaPrimary.href} class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary-dark transition-colors">
             {ctaPrimary.label}
           </a>
         )}
         {ctaSecondary && (
-          <a href={ctaSecondary.href} class="px-6 py-3 border-2 border-white text-white rounded-xl font-semibold hover:bg-white/10 transition-colors">
+          <a href={ctaSecondary.href} class="px-6 py-3 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary/5 transition-colors">
             {ctaSecondary.label}
           </a>
         )}
