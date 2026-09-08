@@ -38,26 +38,24 @@ const images = imageIds
   <!-- Lightbox modal -->
   <template x-if="lightbox">
     <div
-      class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+      class="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
       x-on:click="lightbox = null"
       x-transition:enter="transition ease-out duration-200"
       x-transition:enter-start="opacity-0"
       x-transition:enter-end="opacity-100"
     >
-      <div class="relative max-w-4xl w-full" x-on:click.stop>
-        <img
-          :src="lightbox"
-          alt="Dokumentasi"
-          class="w-full h-auto max-h-[85vh] object-contain rounded-lg"
-        />
-        <button
-          type="button"
-          class="absolute top-2 right-2 w-10 h-10 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"
-          x-on:click="lightbox = null"
-        >
-          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
+      <img
+        :src="lightbox"
+        alt="Dokumentasi"
+        class="max-w-full max-h-full object-contain"
+      />
+      <button
+        type="button"
+        class="absolute top-4 right-4 w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-sm"
+        x-on:click="lightbox = null"
+      >
+        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
     </div>
   </template>
 </div>
