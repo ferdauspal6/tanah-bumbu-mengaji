@@ -20,20 +20,20 @@ const { pretitle, headline, description, subheadline, ctaPrimary, ctaSecondary, 
 
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     {pretitle && (
-      <p class={`font-semibold text-primary uppercase tracking-wider ${small ? 'text-sm' : 'text-sm md:text-base'}`}>
+      <p class={`font-semibold text-primary uppercase tracking-wider hero-animate hero-delay-1 ${small ? 'text-sm' : 'text-sm md:text-base'}`}>
         {pretitle}
       </p>
     )}
-    <h1 class={`font-heading font-bold text-text mt-2 ${small ? 'text-3xl md:text-4xl' : 'text-4xl md:text-5xl lg:text-6xl'}`}>
+    <h1 class={`font-heading font-bold text-text mt-2 hero-animate hero-delay-2 ${small ? 'text-3xl md:text-4xl' : 'text-4xl md:text-5xl lg:text-6xl'}`}>
       {headline}
     </h1>
     {(description || subheadline) && (
-      <p class={`mt-6 text-text-muted max-w-3xl mx-auto leading-relaxed ${small ? 'text-base' : 'text-base md:text-lg'}`}>
+      <p class={`mt-6 text-text-muted max-w-3xl mx-auto leading-relaxed hero-animate hero-delay-3 ${small ? 'text-base' : 'text-base md:text-lg'}`}>
         {description || subheadline}
       </p>
     )}
     {(ctaPrimary || ctaSecondary) && (
-      <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+      <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center hero-animate hero-delay-4">
         {ctaPrimary && (
           <a href={ctaPrimary.href} class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary-dark transition-colors">
             {ctaPrimary.label}

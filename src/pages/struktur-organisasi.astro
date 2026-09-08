@@ -22,23 +22,18 @@ const anggota = organisasiData.filter(a => a.jabatan !== 'Ketua');
 
   <section class="py-16 md:py-20 bg-bg">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Chart Container -->
-      <div class="relative">
-        <!-- Ketua -->
+      <div class="relative animate-on-scroll">
         <div class="flex justify-center mb-2">
           {ketua && <OrgMemberCard nama={ketua.nama} jabatan={ketua.jabatan} featured />}
         </div>
 
-        <!-- Vertical line from Ketua -->
         <div class="flex justify-center">
           <div class="w-px h-8 bg-border"></div>
         </div>
 
-        <!-- Horizontal line -->
         <div class="relative mx-auto" style="max-width: 90%;">
           <div class="absolute top-0 left-0 right-0 h-px bg-border"></div>
 
-          <!-- Vertical lines down to each member -->
           <div class="flex justify-between px-0">
             {anggota.map((_, i) => (
               <div class="flex flex-col items-center">
@@ -48,8 +43,7 @@ const anggota = organisasiData.filter(a => a.jabatan !== 'Ketua');
           </div>
         </div>
 
-        <!-- Anggota Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 mt-0 max-w-4xl mx-auto">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 mt-0 max-w-4xl mx-auto animate-on-scroll delay-1">
           {anggota.map((a) => (
             <OrgMemberCard nama={a.nama} jabatan={a.jabatan} />
           ))}

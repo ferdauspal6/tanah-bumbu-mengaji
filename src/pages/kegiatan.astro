@@ -21,7 +21,7 @@ const kategori = ['Semua', 'Kajian Rutin', 'Livestreaming', 'Dokumentasi'];
   <section class="py-16 md:py-20 bg-bg" x-data="{ active: 'Semua' }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Tabs -->
-      <div class="flex flex-wrap justify-center gap-2 mb-12">
+      <div class="flex flex-wrap justify-center gap-2 mb-12 animate-on-scroll">
         {kategori.map((k) => (
           <button
             type="button"
@@ -46,11 +46,11 @@ const kategori = ['Semua', 'Kajian Rutin', 'Livestreaming', 'Dokumentasi'];
   <!-- Galeri Dokumentasi -->
   <section id="dokumentasi" class="py-16 md:py-20 bg-bg-alt">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-8">
+      <div class="text-center mb-8 animate-on-scroll">
         <h2 class="text-3xl md:text-4xl font-bold font-heading text-text">Dokumentasi Kegiatan</h2>
         <div class="w-16 h-1 bg-accent-gold mx-auto mt-4"></div>
       </div>
-      <GalleryGrid showAll />
+      <div class="animate-on-scroll delay-1"><GalleryGrid showAll /></div>
     </div>
   </section>
 
