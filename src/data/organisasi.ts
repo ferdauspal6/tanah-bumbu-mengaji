@@ -35,4 +35,9 @@ export const organisasiData: Anggota[] = [
     jabatan: 'Anggota',
     foto: '/images/placeholder-piter.jpg',
   },
+  {
+    nama: 'Afri',
+    jabatan: 'Anggota',
+    foto: '/images/placeholder-afri.jpg',
+  },
 ];
