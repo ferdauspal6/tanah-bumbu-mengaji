@@ -114,7 +114,16 @@ import Footer from '../components/Footer.astro';
   <section class="py-16 md:py-20 bg-bg-alt">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <SectionHeading title="Galeri Kegiatan" subtitle="Dokumentasi kegiatan dakwah Tanah Bumbu Mengaji" />
-      <GalleryGrid limit={8} />
+      <GalleryGrid imageIds={[30, 33, 35, 26, 22, 21, 14, 13, 9, 10, 8, 1]} />
+      <div class="text-center mt-8">
+        <a
+          href="/kegiatan#dokumentasi"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary-dark transition-colors"
+        >
+          Tampilkan Lebih Banyak
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
     </div>
   </section>
 

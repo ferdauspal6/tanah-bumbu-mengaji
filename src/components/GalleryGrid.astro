@@ -1,9 +1,10 @@
 ---
 interface Props {
-  limit?: number;
+  imageIds?: number[];
+  showAll?: boolean;
 }
 
-const { limit } = Astro.props;
+const { imageIds, showAll = false } = Astro.props;
 
 const allImages = Array.from({ length: 35 }, (_, i) => ({
   id: i + 1,
@@ -11,7 +12,11 @@ const allImages = Array.from({ length: 35 }, (_, i) => ({
   alt: `Dokumentasi kegiatan ${i + 1}`,
 }));
 
-const images = limit ? allImages.slice(-limit).reverse() : allImages.reverse();
+const images = imageIds
+  ? imageIds.map(id => allImages.find(img => img.id === id)).filter(Boolean)
+  : showAll
+    ? [...allImages].reverse()
+    : allImages;
 ---
 
 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" x-data="{ lightbox: null }">
