@@ -17,14 +17,30 @@ const images = imageIds
   : showAll
     ? [...allImages].reverse()
     : allImages;
+
+const imagesJson = JSON.stringify(images);
 ---
 
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" x-data="{ lightbox: null }">
-  {images.map((img) => (
+<div
+  class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+  x-data={`{
+    lightbox: false,
+    index: 0,
+    images: ${imagesJson},
+    open(i) { this.index = i; this.lightbox = true; },
+    close() { this.lightbox = false; },
+    next() { this.index = (this.index + 1) % this.images.length; },
+    prev() { this.index = (this.index - 1 + this.images.length) % this.images.length; },
+    get src() { return this.images[this.index]?.src; },
+    get alt() { return this.images[this.index]?.alt; },
+    get count() { return this.images.length; }
+  }`}
+>
+  {images.map((img, i) => (
     <button
       type="button"
       class="aspect-square rounded-xl overflow-hidden border border-border hover:shadow-md transition-shadow cursor-pointer group"
-      x-on:click={`lightbox = '${img.src}'`}
+      x-on:click={`open(${i})`}
     >
       <img
         src={img.src}
@@ -39,23 +55,47 @@ const images = imageIds
   <template x-if="lightbox">
     <div
       class="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
-      x-on:click="lightbox = null"
+      x-on:click="close()"
       x-transition:enter="transition ease-out duration-200"
       x-transition:enter-start="opacity-0"
       x-transition:enter-end="opacity-100"
     >
-      <img
-        :src="lightbox"
-        alt="Dokumentasi"
-        class="max-w-full max-h-full object-contain"
-      />
+      <!-- Prev -->
       <button
         type="button"
-        class="absolute top-4 right-4 w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-sm"
-        x-on:click="lightbox = null"
+        class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-sm z-10"
+        x-on:click.stop="prev()"
+      >
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+
+      <!-- Image -->
+      <img
+        :src="src"
+        :alt="alt"
+        class="max-w-[90vw] max-h-[90vh] object-contain"
+      />
+
+      <!-- Next -->
+      <button
+        type="button"
+        class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-sm z-10"
+        x-on:click.stop="next()"
+      >
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </button>
+
+      <!-- Close -->
+      <button
+        type="button"
+        class="absolute top-4 right-4 w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors backdrop-blur-sm z-10"
+        x-on:click="close()"
       >
         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
+
+      <!-- Counter -->
+      <div class="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 backdrop-blur-sm text-white text-sm rounded-full" x-text="(index + 1) + ' / ' + count"></div>
     </div>
   </template>
 </div>
