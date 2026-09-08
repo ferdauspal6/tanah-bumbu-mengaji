@@ -1,0 +1,92 @@
+---
+const posts = [
+  {
+    id: '17992956729011694',
+    timestamp: '2026-09-07',
+    permalink: 'https://www.instagram.com/p/Dc-C6ZHl9IJ/',
+    mediaUrl: 'https://hop.behold.pictures/eyJ1IjoiRzBTenZ0UG9MeFdjdm16ZHlJZlZwY205cVRmMSIsImYiOiJVMkY0RUhrM21Id0szTHlIOEppbSIsInAiOiIxNzk5Mjk1NjcyOTAxMTY5NCIsImgiOiIxbG9vN2NlIn0.jpg?class=squareMedium',
+    caption: 'Semoga Bermanfaat - Follow media kami untuk mendapatkan konten bermanfaat lainnya',
+  },
+  {
+    id: '18086790239656788',
+    timestamp: '2026-09-06',
+    permalink: 'https://www.instagram.com/p/Dc83Q30Doi0/',
+    mediaUrl: 'https://hop.behold.pictures/eyJ1IjoiRzBTenZ0UG9MeFdjdm16ZHlJZlZwY205cVRmMSIsImYiOiJVMkY0RUhrM21Id0szTHlIOEppbSIsInAiOiIxODA4Njc5MDIzOTY1Njc4OCIsImgiOiIxc3FmcXkzIn0.jpg?class=squareMedium',
+    caption: 'Semoga Bermanfaat - Follow media kami untuk mendapatkan konten bermanfaat lainnya',
+  },
+  {
+    id: '18106410392233469',
+    timestamp: '2026-09-05',
+    permalink: 'https://www.instagram.com/p/Dc6EuAPiZrs/',
+    mediaUrl: 'https://hop.behold.pictures/eyJ1IjoiRzBTenZ0UG9MeFdjdm16ZHlJZlZwY205cVRmMSIsImYiOiJVMkY0RUhrM21Id0szTHlIOEppbSIsInAiOiIxODEwNjQxMDM5MjIzMzQ2OSIsImgiOiIxZmw3ZzNoIn0.jpg?class=squareMedium',
+    caption: 'Semoga Bermanfaat - Follow media kami untuk mendapatkan konten bermanfaat lainnya',
+  },
+  {
+    id: '18119560924936038',
+    timestamp: '2026-09-04',
+    permalink: 'https://www.instagram.com/p/Dc2S3xRzQsW/',
+    mediaUrl: 'https://hop.behold.pictures/eyJ1IjoiRzBTenZ0UG9MeFdjdm16ZHlJZlZwY205cVRmMSIsImYiOiJVMkY0RUhrM21Id0szTHlIOEppbSIsInAiOiIxODExOTU2MDkyNDkzNjAzOCIsImgiOiIxb2o2MzRzIn0.jpg?class=squareMedium',
+    caption: 'BERAMAL JARIYAH DENGAN DAKWAH - Setiap infaq yang kami terima InsyaAllah akan kami pergunakan untuk membuat kualitas media dakwah kami jadi lebih baik',
+  },
+  {
+    id: '17966612889175916',
+    timestamp: '2026-08-31',
+    permalink: 'https://www.instagram.com/p/DctNwJxEdFb/',
+    mediaUrl: 'https://hop.behold.pictures/eyJ1IjoiRzBTenZ0UG9MeFdjdm16ZHlJZlZwY205cVRmMSIsImYiOiJVMkY0RUhrM21Id0szTHlIOEppbSIsInAiOiIxNzk2NjYxMjg4OTE3NTkxNiIsImgiOiIxbnl5bG05In0.jpg?class=squareMedium',
+    caption: 'Semoga Bermanfaat - Follow media kami untuk mendapatkan konten bermanfaat lainnya',
+  },
+  {
+    id: '17894842404598705',
+    timestamp: '2026-08-27',
+    permalink: 'https://www.instagram.com/p/Dci5HDemzIR/',
+    mediaUrl: 'https://hop.behold.pictures/eyJ1IjoiRzBTenZ0UG9MeFdjdm16ZHlJZlZwY205cVRmMSIsImYiOiJVMkY0RUhrM21Id0szTHlIOEppbSIsInAiOiIxNzg5NDg0MjQwNDU5ODcwNSIsImgiOiIxaTR0aG90In0.jpg?class=squareMedium',
+    caption: 'Mencintai Nabi dengan Cara yang Tepat - Semoga Bermanfaat',
+  },
+];
+---
+
+<section class="py-16 bg-bg-alt">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-8">
+      <h2 class="text-3xl md:text-4xl font-bold font-heading text-text">Poster Dakwah Harian</h2>
+      <div class="w-16 h-1 bg-accent-gold mx-auto mt-4"></div>
+      <p class="mt-4 text-text-muted">Poster dakwah terbaru dari Instagram kami</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-8">
+      {posts.map((post) => (
+        <a
+          href={post.permalink}
+          target="_blank"
+          rel="noopener"
+          class="group block rounded-2xl overflow-hidden border border-border hover:shadow-md transition-shadow"
+        >
+          <div class="aspect-square overflow-hidden">
+            <img
+              src={post.mediaUrl}
+              alt={post.caption}
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+          </div>
+          <div class="p-3">
+            <p class="text-xs text-text-muted line-clamp-2">{post.caption}</p>
+            <span class="text-xs text-primary font-medium mt-1 inline-block">{post.timestamp}</span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div class="text-center">
+      <a
+        href="https://www.instagram.com/tanahbumbumengaji/"
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary-dark transition-colors"
+      >
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        Lihat Semua di Instagram
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,34 @@
+---
+interface Props {
+  namaBank: string;
+  nomorRekening: string;
+  namaPemilik: string;
+  icon?: string;
+}
+
+const { namaBank, nomorRekening, namaPemilik } = Astro.props;
+---
+
+<div class="bg-white rounded-2xl border border-border p-6">
+  <div class="flex items-center justify-between mb-3">
+    <div>
+      <h3 class="font-semibold text-text">{namaBank}</h3>
+      <p class="text-sm text-text-muted">{namaPemilik}</p>
+    </div>
+    <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+      <svg class="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+    </div>
+  </div>
+  <div class="flex items-center justify-between bg-bg-alt rounded-lg px-4 py-3">
+    <code class="text-lg font-mono font-bold text-text">{nomorRekening}</code>
+    <button
+      type="button"
+      class="p-2 hover:bg-white rounded-lg transition-colors text-primary"
+      x-data="{ copied: false }"
+      x-on:click={`navigator.clipboard.writeText('${nomorRekening}'); copied = true; setTimeout(() => copied = false, 2000)`}
+    >
+      <svg x-show="!copied" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+      <svg x-show="copied" class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    </button>
+  </div>
+</div>

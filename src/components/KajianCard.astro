@@ -1,0 +1,32 @@
+---
+import type { Kajian } from '../data/kajian';
+
+interface Props {
+  kajian: Kajian;
+}
+
+const { kajian } = Astro.props;
+---
+
+<article class="bg-white rounded-2xl border border-border p-6 hover:shadow-md transition-shadow">
+  <div class="flex items-start justify-between mb-3">
+    <span class="text-sm font-medium text-text-muted">{kajian.tanggal}</span>
+    {kajian.badge && (
+      <span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full uppercase">
+        {kajian.badge}
+      </span>
+    )}
+  </div>
+  <h3 class="text-lg font-bold font-heading text-text mb-2">{kajian.judul}</h3>
+  <p class="text-sm text-text-muted mb-3">Pemateri: {kajian.pemateri}</p>
+  <div class="flex items-center gap-4 text-sm text-text-muted">
+    <span class="flex items-center gap-1">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      {kajian.waktu}
+    </span>
+    <span class="flex items-center gap-1">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      {kajian.lokasi}
+    </span>
+  </div>
+</article>

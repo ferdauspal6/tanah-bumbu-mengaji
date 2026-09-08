@@ -1,0 +1,44 @@
+---
+interface Props {
+  columns?: number;
+}
+
+const { columns = 4 } = Astro.props;
+const placeholders = Array.from({ length: 8 }, (_, i) => ({
+  id: i + 1,
+  label: `Kegiatan ${i + 1}`,
+}));
+---
+
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" x-data="{ lightbox: null }">
+  {placeholders.map((item) => (
+    <button
+      type="button"
+      class="aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-primary/20 to-accent-gold/20 flex items-center justify-center text-sm text-text-muted border border-border hover:shadow-md transition-shadow cursor-pointer"
+      x-on:click={`lightbox = ${item.id}`}
+    >
+      <div class="text-center p-2">
+        <svg class="w-8 h-8 mx-auto mb-1 text-text-muted/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <span>Placeholder: {item.label}</span>
+      </div>
+    </button>
+  ))}
+
+  <!-- Lightbox modal -->
+  <template x-if="lightbox">
+    <div
+      class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+      x-on:click="lightbox = null"
+      x-transition:enter="transition ease-out duration-200"
+      x-transition:enter-start="opacity-0"
+      x-transition:enter-end="opacity-100"
+    >
+      <div class="bg-white rounded-2xl p-8 max-w-md w-full text-center" x-on:click.stop>
+        <p class="text-text-muted mb-4">Placeholder: Foto Kegiatan</p>
+        <button type="button" class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors" x-on:click="lightbox = null">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </template>
+</div>

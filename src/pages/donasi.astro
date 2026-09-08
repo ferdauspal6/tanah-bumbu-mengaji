@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import DonationInfoCard from '../components/DonationInfoCard.astro';
+import DonationConfirmForm from '../components/DonationConfirmForm.astro';
+import CTASection from '../components/CTASection.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout title="Donasi" description="Dukung dakwah sunnah di Tanah Bumbu melalui donasi Anda.">
+  <Navbar />
+
+  <Hero
+    headline="Dukung Dakwah Sunnah di Tanah Bumbu"
+    subheadline="Setiap donasi Anda sangat berarti untuk kelangsungan kegiatan dakwah kami."
+    small
+  />
+
+  <!-- Rekening Donasi -->
+  <section class="py-16 bg-bg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold font-heading text-text">Informasi Donasi</h2>
+        <div class="w-16 h-1 bg-accent-gold mx-auto mt-4"></div>
+        <p class="mt-4 text-text-muted max-w-2xl mx-auto">Anda dapat berdonasi melalui rekening bank berikut</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-12">
+        <DonationInfoCard namaBank="BSI (Kode: 451)" nomorRekening="7300984449" namaPemilik="a.n Tanah Bumbu Mengaji" />
+        <DonationInfoCard namaBank="BSI" nomorRekening="7187087408" namaPemilik="a.n Yayasan Tambang Ilmu Hasah" />
+      </div>
+
+      <!-- Form Konfirmasi -->
+      <div class="max-w-2xl mx-auto">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl md:text-4xl font-bold font-heading text-text">Konfirmasi Donasi</h2>
+          <div class="w-16 h-1 bg-accent-gold mx-auto mt-4"></div>
+        </div>
+        <DonationConfirmForm />
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Donasi -->
+  <section class="py-16 bg-bg-alt">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold font-heading text-text">Pertanyaan Umum</h2>
+        <div class="w-16 h-1 bg-accent-gold mx-auto mt-4"></div>
+      </div>
+
+      <div class="space-y-4" x-data="{ open: null }">
+        <div class="bg-white rounded-2xl border border-border overflow-hidden">
+          <button type="button" class="w-full px-6 py-4 text-left flex items-center justify-between font-semibold text-text" x-on:click="open = open === 1 ? null : 1">
+            Bagaimana cara berdonasi?
+            <svg class="w-5 h-5 text-text-muted transition-transform" :class="{ 'rotate-180': open === 1 }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div x-show="open === 1" x-collapse>
+            <div class="px-6 pb-4 text-text-muted">
+              Pilih rekening bank atau e-wallet yang tersedia, lakukan transfer sesuai nominal yang diinginkan, dan konfirmasi melalui WhatsApp atau form konfirmasi di atas.
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-border overflow-hidden">
+          <button type="button" class="w-full px-6 py-4 text-left flex items-center justify-between font-semibold text-text" x-on:click="open = open === 2 ? null : 2">
+            Apakah donasi saya aman?
+            <svg class="w-5 h-5 text-text-muted transition-transform" :class="{ 'rotate-180': open === 2 }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div x-show="open === 2" x-collapse>
+            <div class="px-6 pb-4 text-text-muted">
+              Ya, kami menggunakan rekening resmi yang terdaftar atas nama organisasi. Semua donasi akan dipertanggungjawabkan dengan transparan.
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-border overflow-hidden">
+          <button type="button" class="w-full px-6 py-4 text-left flex items-center justify-between font-semibold text-text" x-on:click="open = open === 3 ? null : 3">
+            Bagaimana saya tahu donasi saya sudah sampai?
+            <svg class="w-5 h-5 text-text-muted transition-transform" :class="{ 'rotate-180': open === 3 }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div x-show="open === 3" x-collapse>
+            <div class="px-6 pb-4 text-text-muted">
+              Konfirmasi melalui WhatsApp atau form di atas. Kami akan memberikan kabar bahwa donasi Anda telah diterima dan akan digunakan untuk kepentingan dakwah.
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-border overflow-hidden">
+          <button type="button" class="w-full px-6 py-4 text-left flex items-center justify-between font-semibold text-text" x-on:click="open = open === 4 ? null : 4">
+            Bagaimana penggunaan dana donasi?
+            <svg class="w-5 h-5 text-text-muted transition-transform" :class="{ 'rotate-180': open === 4 }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div x-show="open === 4" x-collapse>
+            <div class="px-6 pb-4 text-text-muted">
+              Dana donasi digunakan untuk operasional kajian, sewa tempat, konsumsi, produksi konten dakwah, dan kegiatan sosial lainnya. Laporan pertanggungjawaban akan dipublikasikan secara berkala.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    headline="Jadilah Bagian dari Dakwah"
+    description="Donasi Anda membantu kami terus menebar ilmu sunnah."
+    ctaLabel="Kembali ke Beranda"
+    ctaHref="/"
+  />
+
+  <Footer />
+</BaseLayout>

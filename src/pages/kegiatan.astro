@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import GalleryGrid from '../components/GalleryGrid.astro';
+import Footer from '../components/Footer.astro';
+
+const kategori = ['Semua', 'Kajian Rutin', 'Livestreaming', 'Dokumentasi'];
+---
+
+<BaseLayout title="Kegiatan" description="Kegiatan dan kajian rutin Tanah Bumbu Mengaji.">
+  <Navbar />
+
+  <Hero
+    headline="Kegiatan & Kajian"
+    subheadline="Ikuti berbagai kegiatan dakwah dan kajian sunnah kami."
+    small
+  />
+
+  <!-- Tab Filter -->
+  <section class="py-16 md:py-20 bg-bg" x-data="{ active: 'Semua' }">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Tabs -->
+      <div class="flex flex-wrap justify-center gap-2 mb-12">
+        {kategori.map((k) => (
+          <button
+            type="button"
+            class="px-5 py-2 rounded-xl text-sm font-medium transition-colors"
+            x-on:click={`active = '${k}'`}
+            x-bind:class={`active === '${k}' ? 'bg-primary text-white' : 'bg-bg-alt text-text-muted hover:text-text'`}
+          >
+            {k}
+          </button>
+        ))}
+      </div>
+
+      <!-- Empty State -->
+      <div class="text-center py-16">
+        <svg class="w-16 h-16 mx-auto mb-4 text-text-muted/30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        <p class="text-text-muted text-lg">Belum ada kegiatan</p>
+        <p class="text-text-muted/60 text-sm mt-1">Jadwal kajian akan segera ditambahkan</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Galeri Dokumentasi -->
+  <section class="py-16 md:py-20 bg-bg-alt">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl md:text-4xl font-bold font-heading text-text">Dokumentasi Kegiatan</h2>
+        <div class="w-16 h-1 bg-accent-gold mx-auto mt-4"></div>
+      </div>
+      <GalleryGrid />
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
