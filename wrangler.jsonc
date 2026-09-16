@@ -1,0 +1,11 @@
+{
+  "name": "tbm-landing-page",
+  "compatibility_date": "2026-09-14",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tanbu-mengaji",
+      "database_id": "7aeeccf4-b3bf-4666-a4c4-e3daad6d3523"
+    }
+  ]
+}

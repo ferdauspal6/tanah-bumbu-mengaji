@@ -1,0 +1,580 @@
+---
+export const prerender = false;
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Tanah Bumbu Mengaji</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    @import "tailwindcss";
+    @theme {
+      --font-sans: "Inter", sans-serif;
+    }
+    body { font-family: "Inter", sans-serif; }
+    .tab-active { background: #09090b; color: #fafafa; }
+    .tab-inactive { background: transparent; color: #71717a; }
+    .tab-inactive:hover { background: #f4f4f5; color: #18181b; }
+  </style>
+</head>
+<body class="bg-zinc-50 text-zinc-950 min-h-screen">
+
+<div x-data="adminDashboard()" x-init="init()" class="flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-white border-r border-zinc-200 flex flex-col shrink-0 fixed h-full">
+    <div class="px-6 py-5 border-b border-zinc-200">
+      <h1 class="font-semibold text-base">TBM Admin</h1>
+      <p class="text-xs text-zinc-500 mt-0.5">Tanah Bumbu Mengaji</p>
+    </div>
+    <nav class="flex-1 p-3 space-y-1">
+      <button @click="activeTab = 'settings'" :class="activeTab === 'settings' ? 'bg-zinc-100 text-zinc-950' : 'text-zinc-600 hover:bg-zinc-50'" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Pengaturan
+      </button>
+      <button @click="activeTab = 'posters'" :class="activeTab === 'posters' ? 'bg-zinc-100 text-zinc-950' : 'text-zinc-600 hover:bg-zinc-50'" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        Poster
+      </button>
+      <button @click="activeTab = 'donations'" :class="activeTab === 'donations' ? 'bg-zinc-100 text-zinc-950' : 'text-zinc-600 hover:bg-zinc-50'" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Donasi
+      </button>
+      <button @click="activeTab = 'marquee'" :class="activeTab === 'marquee' ? 'bg-zinc-100 text-zinc-950' : 'text-zinc-600 hover:bg-zinc-50'" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+        Running Text
+      </button>
+    </nav>
+    <div class="p-4 border-t border-zinc-200">
+      <a href="/display" target="_blank" class="flex items-center gap-2 text-xs text-zinc-500 hover:text-zinc-900 transition-colors">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        Buka Display
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 ml-64 p-8">
+
+    <!-- TOAST -->
+    <div x-show="toast" x-transition class="fixed top-6 right-6 z-50 bg-zinc-900 text-white text-sm font-medium px-4 py-2.5 rounded-lg shadow-lg">
+      <span x-text="toastMsg"></span>
+    </div>
+
+    <!-- ============ SETTINGS TAB ============ -->
+    <div x-show="activeTab === 'settings'">
+      <div class="mb-8">
+        <h2 class="text-2xl font-bold tracking-tight">Pengaturan</h2>
+        <p class="text-sm text-zinc-500 mt-1">Konfigurasi nama masjid, lokasi, dan koordinat GPS.</p>
+      </div>
+
+      <div class="max-w-2xl space-y-6">
+        <div class="bg-white rounded-xl border border-zinc-200 p-6 space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1.5">Nama Masjid / Musholla</label>
+            <input x-model="settings.mosque_name" type="text" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors" placeholder="Musholla Ibnu Abbas">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1.5">Nama Lokasi</label>
+            <input x-model="settings.location_name" type="text" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors" placeholder="Tanah Bumbu · Kalimantan Selatan">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-zinc-700 mb-1.5">Latitude</label>
+              <input x-model="settings.lat" type="text" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors" placeholder="-3.4553">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-zinc-700 mb-1.5">Longitude</label>
+              <input x-model="settings.lng" type="text" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors" placeholder="115.9750">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1.5">Timezone</label>
+            <select x-model="settings.timezone" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors bg-white">
+              <option value="Asia/Makassar">WITA (Asia/Makassar)</option>
+              <option value="Asia/Jakarta">WIB (Asia/Jakarta)</option>
+              <option value="Asia/Jayapura">WIT (Asia/Jayapura)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button @click="saveSettings()" :disabled="saving" class="px-5 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 disabled:opacity-50 transition-colors">
+            <span x-show="!saving">Simpan Pengaturan</span>
+            <span x-show="saving">Menyimpan...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ POSTERS TAB ============ -->
+    <div x-show="activeTab === 'posters'">
+      <div class="mb-8 flex items-start justify-between">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight">Poster</h2>
+          <p class="text-sm text-zinc-500 mt-1">Kelola gambar yang ditampilkan di carousel display.</p>
+        </div>
+        <button @click="showPosterForm = true; resetPosterForm()" class="px-4 py-2 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 transition-colors">
+          + Tambah Poster
+        </button>
+      </div>
+
+      <!-- Poster Form Modal -->
+      <div x-show="showPosterForm" x-transition class="fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4" @click.self="showPosterForm = false">
+        <div class="bg-white rounded-xl border border-zinc-200 shadow-xl w-full max-w-md p-6">
+          <h3 class="text-lg font-semibold mb-4" x-text="editingPosterId ? 'Edit Poster' : 'Tambah Poster'"></h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-zinc-700 mb-1.5">URL Gambar</label>
+              <input x-model="posterForm.img_url" type="text" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors" placeholder="https://drive.google.com/thumbnail?id=...">
+              <p class="text-xs text-zinc-500 mt-1">Google Drive: share "Anyone with the link", ambil ID, format: <code class="bg-zinc-100 px-1 rounded">https://drive.google.com/thumbnail?id=ID&sz=w1000</code></p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-zinc-700 mb-1.5">Caption</label>
+              <input x-model="posterForm.caption" type="text" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors" placeholder="Poster Kajian">
+            </div>
+            <!-- Preview -->
+            <div x-show="posterForm.img_url" class="rounded-lg border border-zinc-200 overflow-hidden bg-zinc-50">
+              <img :src="posterForm.img_url" class="w-full h-48 object-cover" @error="$el.style.display='none'">
+            </div>
+          </div>
+          <div class="flex justify-end gap-2 mt-6">
+            <button @click="showPosterForm = false" class="px-4 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 rounded-lg transition-colors">Batal</button>
+            <button @click="savePoster()" :disabled="saving" class="px-4 py-2 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 disabled:opacity-50 transition-colors">
+              <span x-show="!saving">Simpan</span>
+              <span x-show="saving">Menyimpan...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Poster List -->
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <template x-for="(p, i) in posters" :key="p.id">
+          <div class="bg-white rounded-xl border border-zinc-200 overflow-hidden group">
+            <div class="aspect-[4/5] bg-zinc-100 relative">
+              <img :src="p.img_url" :alt="p.caption" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                <button @click="editPoster(p)" class="px-3 py-1.5 bg-white text-zinc-900 text-xs font-medium rounded-lg hover:bg-zinc-100 transition-colors">Edit</button>
+                <button @click="deletePoster(p.id)" class="px-3 py-1.5 bg-red-500 text-white text-xs font-medium rounded-lg hover:bg-red-600 transition-colors">Hapus</button>
+                <button @click="movePoster(i, -1)" :disabled="i === 0" class="px-2 py-1.5 bg-white text-zinc-900 text-xs font-medium rounded-lg hover:bg-zinc-100 disabled:opacity-30 transition-colors">↑</button>
+                <button @click="movePoster(i, 1)" :disabled="i === posters.length - 1" class="px-2 py-1.5 bg-white text-zinc-900 text-xs font-medium rounded-lg hover:bg-zinc-100 disabled:opacity-30 transition-colors">↓</button>
+              </div>
+            </div>
+            <div class="px-3 py-2.5">
+              <p class="text-sm font-medium truncate" x-text="p.caption || 'Tanpa caption'"></p>
+              <p class="text-xs text-zinc-500 truncate mt-0.5" x-text="p.img_url"></p>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div x-show="posters.length === 0" class="text-center py-16 text-zinc-400">
+        <svg class="w-12 h-12 mx-auto mb-3 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <p class="text-sm">Belum ada poster. Klik "Tambah Poster" untuk menambahkan.</p>
+      </div>
+    </div>
+
+    <!-- ============ DONATIONS TAB ============ -->
+    <div x-show="activeTab === 'donations'">
+      <div class="mb-8 flex items-start justify-between">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight">Donasi</h2>
+          <p class="text-sm text-zinc-500 mt-1">Kelola laporan infaq yang ditampilkan di display.</p>
+        </div>
+        <button @click="showDonationForm = true; resetDonationForm()" class="px-4 py-2 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 transition-colors">
+          + Tambah Donasi
+        </button>
+      </div>
+
+      <!-- Donation Form Modal -->
+      <div x-show="showDonationForm" x-transition class="fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4" @click.self="showDonationForm = false">
+        <div class="bg-white rounded-xl border border-zinc-200 shadow-xl w-full max-w-md p-6">
+          <h3 class="text-lg font-semibold mb-4" x-text="editingDonationId ? 'Edit Donasi' : 'Tambah Donasi'"></h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-zinc-700 mb-1.5">Nama Donasi <span class="text-red-500">*</span></label>
+              <input x-model="donationForm.title" type="text" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors" placeholder="Infaq & Sedekah">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-zinc-700 mb-1.5">Target (Rp)</label>
+                <input x-model.number="donationForm.target" type="number" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors" placeholder="60000000">
+                <p class="text-xs text-zinc-500 mt-1">Kosongkan jika tidak ingin menampilkan progress bar</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-zinc-700 mb-1.5">Dana Masuk (Rp)</label>
+                <input x-model.number="donationForm.collected" type="number" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors" placeholder="32450000">
+                <p class="text-xs text-zinc-500 mt-1">Kosongkan jika hanya ingin menampilkan nama</p>
+              </div>
+            </div>
+            <!-- Preview -->
+            <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-4">
+              <p class="text-xs text-zinc-500 mb-2">Preview:</p>
+              <p class="font-semibold text-sm" x-text="donationForm.title || 'Nama Donasi'"></p>
+              <template x-if="donationForm.target > 0">
+                <div class="mt-2">
+                  <div class="h-2 bg-zinc-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-zinc-900 rounded-full transition-all" :style="`width: ${Math.min(100, Math.round(((donationForm.collected || 0) / donationForm.target) * 100))}%`"></div>
+                  </div>
+                  <div class="flex justify-between mt-1.5 text-xs text-zinc-500">
+                    <span x-text="'Rp ' + (donationForm.collected || 0).toLocaleString('id-ID')"></span>
+                    <span x-text="'Rp ' + donationForm.target.toLocaleString('id-ID')"></span>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+          <div class="flex justify-end gap-2 mt-6">
+            <button @click="showDonationForm = false" class="px-4 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 rounded-lg transition-colors">Batal</button>
+            <button @click="saveDonation()" :disabled="saving" class="px-4 py-2 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 disabled:opacity-50 transition-colors">
+              <span x-show="!saving">Simpan</span>
+              <span x-show="saving">Menyimpan...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Donation List -->
+      <div class="space-y-3">
+        <template x-for="(d, i) in donations" :key="d.id">
+          <div class="bg-white rounded-xl border border-zinc-200 p-4 flex items-center gap-4 group hover:border-zinc-300 transition-colors">
+            <div class="flex items-center gap-1 shrink-0">
+              <button @click="moveDonation(i, -1)" :disabled="i === 0" class="p-1 text-zinc-400 hover:text-zinc-700 disabled:opacity-30 transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+              </button>
+              <button @click="moveDonation(i, 1)" :disabled="i === donations.length - 1" class="p-1 text-zinc-400 hover:text-zinc-700 disabled:opacity-30 transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold truncate" x-text="d.title"></p>
+              <div class="flex items-center gap-4 mt-1">
+                <span x-show="d.target > 0" class="text-xs text-zinc-500" x-text="'Target: Rp ' + Number(d.target).toLocaleString('id-ID')"></span>
+                <span x-show="d.collected > 0" class="text-xs text-zinc-500" x-text="'Masuk: Rp ' + Number(d.collected).toLocaleString('id-ID')"></span>
+                <span x-show="d.target > 0" class="text-xs font-medium text-zinc-700" x-text="Math.min(100, Math.round((d.collected / d.target) * 100)) + '%'"></span>
+              </div>
+              <div x-show="d.target > 0" class="mt-2 h-1.5 bg-zinc-100 rounded-full overflow-hidden max-w-xs">
+                <div class="h-full bg-zinc-900 rounded-full" :style="`width: ${Math.min(100, Math.round((d.collected / d.target) * 100))}%`"></div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button @click="editDonation(d)" class="p-2 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              </button>
+              <button @click="deleteDonation(d.id)" class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div x-show="donations.length === 0" class="text-center py-16 text-zinc-400">
+        <svg class="w-12 h-12 mx-auto mb-3 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <p class="text-sm">Belum ada data donasi. Klik "Tambah Donasi" untuk menambahkan.</p>
+      </div>
+    </div>
+
+    <!-- ============ MARQUEE TAB ============ -->
+    <div x-show="activeTab === 'marquee'">
+      <div class="mb-8">
+        <h2 class="text-2xl font-bold tracking-tight">Running Text</h2>
+        <p class="text-sm text-zinc-500 mt-1">Konfigurasi teks berjalan di footer display.</p>
+      </div>
+
+      <div class="max-w-2xl space-y-6">
+        <div class="bg-white rounded-xl border border-zinc-200 p-6 space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1.5">Teks Berjalan</label>
+            <textarea x-model="marqueeText" rows="4" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors resize-none" placeholder="▶ INFAQ & SEDEKAH: BSI (451) 7300984449 a.n. Tanah Bumbu Mengaji   ▶ Konfirmasi: 0811-5009-929"></textarea>
+            <p class="text-xs text-zinc-500 mt-1">Gunakan ▶ sebagai pemisah antar item. Teks akan berjalan otomatis di footer display.</p>
+          </div>
+        </div>
+
+        <!-- Live Preview -->
+        <div class="bg-white rounded-xl border border-zinc-200 overflow-hidden">
+          <div class="px-4 py-3 border-b border-zinc-200">
+            <p class="text-sm font-medium text-zinc-700">Preview</p>
+          </div>
+          <div class="bg-[#4A1015] py-3 overflow-hidden">
+            <div class="flex whitespace-nowrap" style="animation: marquee 48s linear infinite;">
+              <span class="px-6 text-[#E4C280] text-lg" x-text="marqueeText || 'Teks berjalan akan muncul di sini...'"></span>
+              <span class="px-6 text-[#E4C280] text-lg" x-text="marqueeText || 'Teks berjalan akan muncul di sini...'"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button @click="saveMarquee()" :disabled="saving" class="px-5 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 disabled:opacity-50 transition-colors">
+            <span x-show="!saving">Simpan Running Text</span>
+            <span x-show="saving">Menyimpan...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<style>
+  @keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+</style>
+
+<script>
+function adminDashboard() {
+  return {
+    activeTab: 'settings',
+    saving: false,
+    toast: false,
+    toastMsg: '',
+
+    // Settings
+    settings: {
+      mosque_name: '',
+      location_name: '',
+      lat: '',
+      lng: '',
+      timezone: 'Asia/Makassar',
+    },
+
+    // Posters
+    posters: [],
+    showPosterForm: false,
+    editingPosterId: null,
+    posterForm: { img_url: '', caption: '' },
+
+    // Donations
+    donations: [],
+    showDonationForm: false,
+    editingDonationId: null,
+    donationForm: { title: '', target: 0, collected: 0 },
+
+    // Marquee
+    marqueeText: '',
+
+    async init() {
+      await this.loadAll();
+    },
+
+    showToast(msg) {
+      this.toastMsg = msg;
+      this.toast = true;
+      setTimeout(() => this.toast = false, 2500);
+    },
+
+    async loadAll() {
+      try {
+        const [settingsRes, postersRes, donationsRes] = await Promise.all([
+          fetch('/api/admin/settings'),
+          fetch('/api/admin/posters'),
+          fetch('/api/admin/donations'),
+        ]);
+        const settingsData = await settingsRes.json();
+        const postersData = await postersRes.json();
+        const donationsData = await donationsRes.json();
+
+        if (settingsData.settings) {
+          this.settings = {
+            mosque_name: settingsData.settings.mosque_name || '',
+            location_name: settingsData.settings.location_name || '',
+            lat: settingsData.settings.lat || '',
+            lng: settingsData.settings.lng || '',
+            timezone: settingsData.settings.timezone || 'Asia/Makassar',
+          };
+          this.marqueeText = settingsData.settings.marquee_text || '';
+        }
+        if (postersData.posters) this.posters = postersData.posters;
+        if (donationsData.donations) this.donations = donationsData.donations;
+      } catch (e) {
+        this.showToast('Gagal memuat data');
+      }
+    },
+
+    // ===== Settings =====
+    async saveSettings() {
+      this.saving = true;
+      try {
+        for (const [key, value] of Object.entries(this.settings)) {
+          await fetch('/api/admin/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key, value: String(value) }),
+          });
+        }
+        this.showToast('Pengaturan tersimpan');
+      } catch (e) {
+        this.showToast('Gagal menyimpan');
+      }
+      this.saving = false;
+    },
+
+    // ===== Posters =====
+    resetPosterForm() {
+      this.editingPosterId = null;
+      this.posterForm = { img_url: '', caption: '' };
+    },
+
+    editPoster(p) {
+      this.editingPosterId = p.id;
+      this.posterForm = { img_url: p.img_url, caption: p.caption || '' };
+      this.showPosterForm = true;
+    },
+
+    async savePoster() {
+      if (!this.posterForm.img_url) return this.showToast('URL gambar wajib diisi');
+      this.saving = true;
+      try {
+        const action = this.editingPosterId ? 'update' : 'add';
+        await fetch('/api/admin/posters', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action,
+            id: this.editingPosterId,
+            img_url: this.posterForm.img_url,
+            caption: this.posterForm.caption,
+          }),
+        });
+        this.showPosterForm = false;
+        await this.loadAll();
+        this.showToast('Poster tersimpan');
+      } catch (e) {
+        this.showToast('Gagal menyimpan poster');
+      }
+      this.saving = false;
+    },
+
+    async deletePoster(id) {
+      if (!confirm('Hapus poster ini?')) return;
+      this.saving = true;
+      try {
+        await fetch('/api/admin/posters', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', id }),
+        });
+        await this.loadAll();
+        this.showToast('Poster dihapus');
+      } catch (e) {
+        this.showToast('Gagal menghapus poster');
+      }
+      this.saving = false;
+    },
+
+    async movePoster(index, dir) {
+      const newIndex = index + dir;
+      if (newIndex < 0 || newIndex >= this.posters.length) return;
+      const items = this.posters.map((p, i) => ({
+        id: p.id,
+        sort_order: i === index ? newIndex : i === newIndex ? index : i,
+      }));
+      try {
+        await fetch('/api/admin/posters', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'reorder', items }),
+        });
+        await this.loadAll();
+      } catch (e) {}
+    },
+
+    // ===== Donations =====
+    resetDonationForm() {
+      this.editingDonationId = null;
+      this.donationForm = { title: '', target: 0, collected: 0 };
+    },
+
+    editDonation(d) {
+      this.editingDonationId = d.id;
+      this.donationForm = { title: d.title, target: d.target, collected: d.collected };
+      this.showDonationForm = true;
+    },
+
+    async saveDonation() {
+      if (!this.donationForm.title) return this.showToast('Nama donasi wajib diisi');
+      this.saving = true;
+      try {
+        const action = this.editingDonationId ? 'update' : 'add';
+        await fetch('/api/admin/donations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action,
+            id: this.editingDonationId,
+            title: this.donationForm.title,
+            target: this.donationForm.target || 0,
+            collected: this.donationForm.collected || 0,
+          }),
+        });
+        this.showDonationForm = false;
+        await this.loadAll();
+        this.showToast('Donasi tersimpan');
+      } catch (e) {
+        this.showToast('Gagal menyimpan donasi');
+      }
+      this.saving = false;
+    },
+
+    async deleteDonation(id) {
+      if (!confirm('Hapus donasi ini?')) return;
+      this.saving = true;
+      try {
+        await fetch('/api/admin/donations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', id }),
+        });
+        await this.loadAll();
+        this.showToast('Donasi dihapus');
+      } catch (e) {
+        this.showToast('Gagal menghapus donasi');
+      }
+      this.saving = false;
+    },
+
+    async moveDonation(index, dir) {
+      const newIndex = index + dir;
+      if (newIndex < 0 || newIndex >= this.donations.length) return;
+      const items = this.donations.map((d, i) => ({
+        id: d.id,
+        sort_order: i === index ? newIndex : i === newIndex ? index : i,
+      }));
+      try {
+        await fetch('/api/admin/donations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'reorder', items }),
+        });
+        await this.loadAll();
+      } catch (e) {}
+    },
+
+    // ===== Marquee =====
+    async saveMarquee() {
+      this.saving = true;
+      try {
+        await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: 'marquee_text', value: this.marqueeText }),
+        });
+        this.showToast('Running text tersimpan');
+      } catch (e) {
+        this.showToast('Gagal menyimpan');
+      }
+      this.saving = false;
+    },
+  }
+}
+</script>
+
+</body>
+</html>

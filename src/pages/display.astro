@@ -1,0 +1,425 @@
+---
+export const prerender = false;
+
+import type { APIRoute } from 'astro';
+
+const { DB } = Astro.locals.runtime.env;
+
+// Fetch settings
+const settingsRows = await DB.prepare('SELECT key, value FROM settings').all();
+const settings: Record<string, string> = {};
+for (const row of settingsRows.results) {
+  settings[row.key as string] = row.value as string;
+}
+
+// Fetch posters
+const postersResult = await DB.prepare(
+  'SELECT id, img_url, caption FROM posters WHERE active = 1 ORDER BY sort_order ASC'
+).all();
+
+// Fetch donations
+const donationsResult = await DB.prepare(
+  'SELECT id, title, target, collected FROM donations WHERE active = 1 ORDER BY sort_order ASC'
+).all();
+
+// Prayer times
+const lat = parseFloat(settings.lat || '-3.4553');
+const lng = parseFloat(settings.lng || '115.9750');
+const tz = settings.timezone || 'Asia/Makassar';
+
+const now = new Date();
+const dateKey = now.toLocaleDateString('en-CA', { timeZone: tz });
+const [y, m, d] = dateKey.split('-');
+
+let prayerTimings: Record<string, string> = {};
+let hijriDate = '';
+
+const cached = await DB.prepare(
+  'SELECT data FROM prayer_cache WHERE date_key = ? AND lat = ? AND lng = ?'
+).bind(dateKey, lat, lng).first();
+
+if (cached) {
+  const parsed = JSON.parse(cached.data as string);
+  prayerTimings = parsed.timings || {};
+  const h = parsed.date?.hijri;
+  if (h) {
+    const hijriMonths = ['Muharram','Safar',"Rabiul Awal",'Rabiul Akhir','Jumadil Awal','Jumadil Akhir','Rajab',"Sya'ban",'Ramadhan','Syawal',"Dzulqa'dah",'Dzulhijjah'];
+    hijriDate = `${h.day} ${hijriMonths[parseInt(h.month.number, 10) - 1]} ${h.year} H`;
+  }
+} else {
+  const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${lat}&longitude=${lng}&method=20&timezonestring=${tz}`;
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    if (json.code === 200) {
+      prayerTimings = json.data.timings;
+      const h = json.data.date.hijri;
+      const hijriMonths = ['Muharram','Safar',"Rabiul Awal",'Rabiul Akhir','Jumadil Awal','Jumadil Akhir','Rajab',"Sya'ban",'Ramadhan','Syawal',"Dzulqa'dah",'Dzulhijjah'];
+      hijriDate = `${h.day} ${hijriMonths[parseInt(h.month.number, 10) - 1]} ${h.year} H`;
+      await DB.prepare(
+        'INSERT OR REPLACE INTO prayer_cache (date_key, lat, lng, data) VALUES (?, ?, ?, ?)'
+      ).bind(dateKey, lat, lng, JSON.stringify(json.data)).run();
+    }
+  } catch (e) {}
+}
+---
+
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, initial-scale=1.0">
+<title>{settings.mosque_name || 'Display Sholat'} — Display TV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<style>
+  @import "tailwindcss";
+  @theme {
+    --color-cream: #FBF1E1;
+    --color-card: #FFFDF8;
+    --color-maroon: #4A1015;
+    --color-maroon2: #6B1B22;
+    --color-maroon3: #8B2630;
+    --color-gold: #C9A15A;
+    --color-goldlt: #E4C280;
+    --color-goldpale: #F3DDA8;
+    --color-ink: #2B1712;
+    --color-mute: #8A6F63;
+    --color-line: #E9D9C2;
+    --font-display: "Amiri", serif;
+    --font-num: "Space Grotesk", sans-serif;
+  }
+  html, body { background: #FBF1E1; margin: 0; padding: 0; }
+  * { font-variant-numeric: tabular-nums; }
+  .marquee-track { animation: marquee 48s linear infinite; }
+  @keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  ::-webkit-scrollbar { display: none; }
+</style>
+</head>
+
+<body class="bg-cream text-ink font-num overflow-hidden w-screen h-screen">
+
+<div x-data="mosqueDisplay()" x-init="init()" class="relative w-screen h-screen flex flex-col">
+
+  <!-- HEADER -->
+  <header class="relative z-10 flex items-center justify-between px-10 py-5 bg-maroon text-cream">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-maroon2 flex items-center justify-center shrink-0">
+        <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="#E4C280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v3M4 21h16M6 21v-6a6 6 0 0 1 12 0v6M9 21v-4a3 3 0 0 1 6 0v4M3 21h1M20 21h1"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="font-display text-3xl tracking-tight text-goldlt leading-tight" x-text="settings.mosque_name"></h1>
+        <p class="text-cream/70 text-base mt-0.5" x-text="settings.location_name"></p>
+      </div>
+    </div>
+    <div class="flex items-center gap-10">
+      <div class="text-right">
+        <p class="text-cream/85 text-lg" x-text="gregorianDate"></p>
+        <p class="text-goldlt text-base" x-text="hijriDateText"></p>
+      </div>
+      <p class="font-num font-bold text-5xl leading-none">
+        <span x-text="clockText"></span>
+        <span class="text-xl font-medium text-cream/60 ml-1">WITA</span>
+      </p>
+    </div>
+  </header>
+
+  <!-- MAIN BODY -->
+  <main class="relative z-10 flex-1 grid grid-cols-5 gap-5 px-8 pt-6 pb-4 min-h-0">
+
+    <!-- LEFT: next prayer + laporan infaq -->
+    <div class="col-span-3 flex flex-col gap-4 min-h-0">
+
+      <!-- NEXT PRAYER HERO -->
+      <div class="bg-maroon rounded-2xl px-8 py-6 flex items-center justify-between overflow-hidden">
+        <div>
+          <p class="text-goldlt text-sm tracking-wide mb-2">Selanjutnya</p>
+          <p class="font-num font-bold text-6xl text-cream leading-none" x-text="nextLabel"></p>
+          <p class="font-num font-bold text-4xl text-goldlt mt-2" x-text="nextTimeText"></p>
+        </div>
+        <div class="bg-maroon2/70 rounded-2xl px-8 py-5 flex items-center gap-4 shrink-0">
+          <svg viewBox="0 0 24 24" class="w-8 h-8 shrink-0" fill="none" stroke="#E4C280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>
+          </svg>
+          <div>
+            <p class="text-cream/70 text-sm mb-1">Menuju adzan</p>
+            <p class="font-num font-bold text-4xl text-cream" x-text="countdownText"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- LAPORAN INFAQ -->
+      <div class="relative flex-1 bg-card border border-line rounded-2xl overflow-hidden flex flex-col min-h-0">
+        <div class="flex items-center justify-between px-7 py-4 bg-maroon text-cream shrink-0">
+          <h2 class="text-lg text-goldlt tracking-wide">Laporan Infaq</h2>
+          <p class="text-cream/70 text-sm" x-text="donations.length > 0 ? (donasiIndex + 1) + ' / ' + donations.length : 'Belum ada data'"></p>
+        </div>
+
+        <div class="relative flex-1 px-8 py-6">
+          <template x-for="(d, i) in donations" :key="d.id">
+            <div
+              x-show="i === donasiIndex"
+              x-transition:enter="transition ease-out duration-700"
+              x-transition:enter-start="opacity-0 translate-y-3"
+              x-transition:enter-end="opacity-100 translate-y-0"
+              x-transition:leave="transition ease-in duration-300"
+              x-transition:leave-start="opacity-100"
+              x-transition:leave-end="opacity-0"
+              class="absolute inset-0 px-8 py-6 flex flex-col justify-center"
+            >
+              <div class="flex items-start justify-between mb-4">
+                <p class="text-3xl font-bold text-ink pr-6" x-text="d.title"></p>
+                <span x-show="d.target > 0" class="shrink-0 bg-goldpale text-maroon font-bold text-3xl rounded-xl px-5 py-2" x-text="percent(d) + '%'"></span>
+              </div>
+
+              <template x-if="d.target > 0">
+                <div>
+                  <div class="h-3 bg-line rounded-full overflow-hidden mb-6">
+                    <div class="h-full bg-gradient-to-r from-maroon3 to-gold rounded-full transition-all duration-700"
+                         :style="`width: ${percent(d)}%`"></div>
+                  </div>
+                  <div class="flex items-end justify-between mb-4">
+                    <div>
+                      <p class="font-num font-bold text-3xl text-maroon" x-text="rupiah(d.collected)"></p>
+                      <p class="text-mute text-base">Terkumpul</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="font-num font-bold text-3xl text-ink/70" x-text="rupiah(d.target)"></p>
+                      <p class="text-mute text-base">Target</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p class="font-num font-bold text-2xl text-ink" x-text="rupiah(sisa(d))"></p>
+                    <p class="text-mute text-base font-semibold">Sisa dana dibutuhkan</p>
+                  </div>
+                </div>
+              </template>
+
+              <template x-if="d.target === 0">
+                <div>
+                  <p x-show="d.collected > 0" class="font-num font-bold text-3xl text-maroon" x-text="'Terkumpul: ' + rupiah(d.collected)"></p>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <!-- Empty state -->
+          <div x-show="donations.length === 0" class="flex items-center justify-center h-full">
+            <p class="text-mute text-lg">Belum ada data donasi</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POSTER CAROUSEL 4:5 -->
+    <div class="col-span-2 relative bg-card border border-line rounded-2xl overflow-hidden">
+      <template x-for="(p, i) in posters" :key="p.id">
+        <img
+          :src="p.img_url" :alt="p.caption"
+          x-show="i === posterIndex"
+          x-transition:enter="transition ease-out duration-700"
+          x-transition:enter-start="opacity-0"
+          x-transition:enter-end="opacity-100"
+          x-transition:leave="transition ease-in duration-500"
+          x-transition:leave-start="opacity-100"
+          x-transition:leave-end="opacity-0"
+          class="absolute inset-0 w-full h-full object-cover"
+        >
+      </template>
+      <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
+        <template x-for="(p, i) in posters" :key="p.id">
+          <span class="h-1.5 rounded-full transition-all" :class="i === posterIndex ? 'w-6 bg-goldlt' : 'w-1.5 bg-cream/60'"></span>
+        </template>
+      </div>
+      <div x-show="posters.length === 0" class="absolute inset-0 flex items-center justify-center">
+        <p class="text-mute text-lg">Belum ada poster</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- PRAYER TIMES STRIP -->
+  <section class="relative z-10 px-8 pb-4">
+    <div class="grid grid-cols-7 gap-3">
+      <template x-for="p in prayerList" :key="p.key">
+        <div class="rounded-xl text-center px-2 py-4"
+             :class="isNext(p) ? 'bg-maroon text-cream' : 'bg-card border border-line'">
+          <p class="text-lg mb-1" :class="isNext(p) ? 'text-goldlt' : 'text-mute'" x-text="p.label"></p>
+          <p class="font-num font-bold text-5xl leading-none" :class="isNext(p) ? 'text-cream' : 'text-ink'" x-text="p.timeText"></p>
+        </div>
+      </template>
+    </div>
+  </section>
+
+  <!-- MARQUEE FOOTER -->
+  <footer class="relative z-10 bg-maroon border-t border-maroon2 py-3 overflow-hidden">
+    <div class="flex whitespace-nowrap marquee-track">
+      <span class="px-6 text-goldlt text-lg" x-text="settings.marquee_text"></span>
+      <span class="px-6 text-goldlt text-lg" x-text="settings.marquee_text"></span>
+    </div>
+  </footer>
+
+</div>
+
+<script define:vars={{
+  settingsData: JSON.stringify({
+    mosque_name: settings.mosque_name || 'Musholla Ibnu Abbas',
+    location_name: settings.location_name || 'Tanah Bumbu · Kalimantan Selatan',
+    marquee_text: settings.marquee_text || '',
+  }),
+  postersData: JSON.stringify(postersResult.results),
+  donationsData: JSON.stringify(donationsResult.results),
+  prayerTimingsData: JSON.stringify(prayerTimings),
+  hijriDateInit: hijriDate,
+  tzInit: tz,
+}}>
+function mosqueDisplay() {
+  const _settings = JSON.parse(settingsData);
+  const _posters = JSON.parse(postersData);
+  const _donations = JSON.parse(donationsData);
+  const _timings = JSON.parse(prayerTimingsData);
+
+  return {
+    settings: _settings,
+    posters: _posters,
+    donations: _donations,
+    timezone: _tzInit || 'Asia/Makassar',
+
+    now: new Date(),
+    clockText: '',
+    gregorianDate: '',
+    hijriDateText: _hijriDateInit || '',
+    fetchedDateKey: null,
+
+    prayerList: [
+      { key: 'imsak',   label: 'Imsak',   raw: null, time: null, timeText: '--:--', fard: false },
+      { key: 'subuh',   label: 'Subuh',   raw: null, time: null, timeText: '--:--', fard: true  },
+      { key: 'terbit',  label: 'Terbit',  raw: null, time: null, timeText: '--:--', fard: false },
+      { key: 'dzuhur',  label: 'Dzuhur',  raw: null, time: null, timeText: '--:--', fard: true  },
+      { key: 'ashar',   label: 'Ashar',   raw: null, time: null, timeText: '--:--', fard: true  },
+      { key: 'maghrib', label: 'Maghrib', raw: null, time: null, timeText: '--:--', fard: true  },
+      { key: 'isya',    label: 'Isya',    raw: null, time: null, timeText: '--:--', fard: true  },
+    ],
+
+    nextKey: null,
+    nextLabel: '—',
+    nextTimeText: '--:--',
+    countdownText: '--:--:--',
+
+    donasiIndex: 0,
+    posterIndex: 0,
+
+    init() {
+      this.applyTimings(_timings);
+      this.tickClock();
+      setInterval(() => this.tickClock(), 1000);
+      if (this.donations.length > 1) {
+        setInterval(() => this.donasiIndex = (this.donasiIndex + 1) % this.donations.length, 8000);
+      }
+      if (this.posters.length > 1) {
+        setInterval(() => this.posterIndex = (this.posterIndex + 1) % this.posters.length, 15000);
+      }
+      // Refresh prayer times & data setiap 30 menit
+      setInterval(() => this.refreshData(), 30 * 60 * 1000);
+    },
+
+    applyTimings(t) {
+      const map = {
+        imsak: t.Imsak, subuh: t.Fajr, terbit: t.Sunrise, dzuhur: t.Dhuhr,
+        ashar: t.Asr, maghrib: t.Maghrib, isya: t.Isha
+      };
+      this.prayerList.forEach(p => {
+        const raw = (map[p.key] || '').split(' ')[0];
+        p.raw = raw;
+        p.timeText = raw || '--:--';
+        p.time = this.toTodayDate(raw);
+      });
+    },
+
+    tickClock() {
+      this.now = new Date();
+      this.clockText = this.now.toLocaleTimeString('id-ID', {
+        hour12: false, hour: '2-digit', minute: '2-digit', timeZone: this.timezone
+      });
+      this.gregorianDate = this.now.toLocaleDateString('id-ID', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: this.timezone
+      });
+
+      const todayKey = this.now.toLocaleDateString('en-CA', { timeZone: this.timezone });
+      if (this.fetchedDateKey && this.fetchedDateKey !== todayKey) {
+        this.refreshData();
+      }
+
+      this.updateCountdown();
+    },
+
+    async refreshData() {
+      try {
+        const res = await fetch('/api/display');
+        const data = await res.json();
+        if (data.settings) this.settings = data.settings;
+        if (data.posters) this.posters = data.posters;
+        if (data.donations) this.donations = data.donations;
+        if (data.prayer) {
+          this.applyTimings(data.prayer.timings);
+          const h = data.prayer.date?.hijri;
+          if (h) {
+            const hijriMonths = ['Muharram','Safar',"Rabiul Awal",'Rabiul Akhir','Jumadil Awal','Jumadil Akhir','Rajab',"Sya'ban",'Ramadhan','Syawal',"Dzulqa'dah",'Dzulhijjah'];
+            this.hijriDateText = `${h.day} ${hijriMonths[parseInt(h.month.number, 10) - 1]} ${h.year} H`;
+          }
+          this.fetchedDateKey = this.now.toLocaleDateString('en-CA', { timeZone: this.timezone });
+        }
+      } catch (e) {}
+    },
+
+    toTodayDate(hhmm) {
+      if (!hhmm || !hhmm.includes(':')) return null;
+      const [h, min] = hhmm.split(':').map(Number);
+      const d = new Date(this.now);
+      d.setHours(h, min, 0, 0);
+      return d;
+    },
+
+    updateCountdown() {
+      const fardList = this.prayerList.filter(p => p.fard && p.time);
+      if (fardList.length === 0) return;
+
+      let target = fardList.find(p => p.time.getTime() > this.now.getTime());
+      let key = target ? target.key : null;
+
+      if (!target) {
+        const subuh = fardList.find(p => p.key === 'subuh');
+        if (subuh) {
+          target = { time: new Date(subuh.time.getTime() + 24 * 60 * 60 * 1000) };
+          key = 'subuh';
+        }
+      }
+
+      this.nextKey = key;
+      const matched = this.prayerList.find(p => p.key === key);
+      this.nextLabel = matched ? matched.label : '—';
+      this.nextTimeText = matched ? matched.timeText : '--:--';
+
+      if (!target) { this.countdownText = '--:--:--'; return; }
+
+      let diff = Math.max(0, target.time.getTime() - this.now.getTime());
+      const hh = String(Math.floor(diff / 3600000)).padStart(2, '0');
+      const mm = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+      const ss = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+      this.countdownText = `${hh}:${mm}:${ss}`;
+    },
+
+    isNext(p) { return p.key === this.nextKey; },
+    rupiah(n) { return 'Rp ' + Number(n).toLocaleString('id-ID'); },
+    percent(d) { return d.target > 0 ? Math.min(100, Math.round((d.collected / d.target) * 100)) : 0; },
+    sisa(d) { return Math.max(0, d.target - d.collected); },
+  }
+}
+</script>
+
+</body>
+</html>
