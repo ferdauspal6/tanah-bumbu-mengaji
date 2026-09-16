@@ -110,16 +110,12 @@ if (cached) {
 <div x-data="mosqueDisplay()" x-init="init()" class="relative w-screen h-screen flex flex-col">
 
   <!-- HEADER -->
-  <header class="relative z-10 flex items-center justify-between px-10 py-5 bg-maroon text-cream">
+  <header class="relative z-10 flex items-center justify-between px-10 py-3 bg-maroon text-cream">
     <div class="flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl bg-maroon2 flex items-center justify-center shrink-0">
-        <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="#E4C280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2v3M4 21h16M6 21v-6a6 6 0 0 1 12 0v6M9 21v-4a3 3 0 0 1 6 0v4M3 21h1M20 21h1"/>
-        </svg>
-      </div>
+      <img src="/logo masjid.png" alt="Logo" class="h-12 w-12 rounded-xl object-cover shrink-0">
       <div>
-        <h1 class="font-display text-3xl tracking-tight text-goldlt leading-tight" x-text="settings.mosque_name"></h1>
-        <p class="text-cream/70 text-base mt-0.5" x-text="settings.location_name"></p>
+        <h1 class="font-display font-bold text-cream text-4xl tracking-tight leading-tight" x-text="settings.mosque_name"></h1>
+        <p class="text-cream/70 text-base -mt-1" x-text="settings.location_name"></p>
       </div>
     </div>
     <div class="flex items-center gap-10">
@@ -135,10 +131,10 @@ if (cached) {
   </header>
 
   <!-- MAIN BODY -->
-  <main class="relative z-10 flex-1 grid grid-cols-5 gap-5 px-8 pt-6 pb-4 min-h-0">
+  <main class="relative z-10 flex-1 grid grid-cols-2 gap-5 px-8 pt-6 pb-4 min-h-0">
 
     <!-- LEFT: next prayer + laporan infaq -->
-    <div class="col-span-3 flex flex-col gap-4 min-h-0">
+    <div class="flex flex-col gap-4 min-h-0">
 
       <!-- NEXT PRAYER HERO -->
       <div class="bg-maroon rounded-2xl px-8 py-6 flex items-center justify-between overflow-hidden">
@@ -221,8 +217,8 @@ if (cached) {
       </div>
     </div>
 
-    <!-- POSTER CAROUSEL 4:5 -->
-    <div class="col-span-2 relative bg-card border border-line rounded-2xl overflow-hidden">
+    <!-- POSTER CAROUSEL -->
+    <div class="relative bg-card border border-line rounded-2xl overflow-hidden">
       <template x-for="(p, i) in posters" :key="p.id">
         <img
           :src="p.img_url" :alt="p.caption"
