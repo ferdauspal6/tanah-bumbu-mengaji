@@ -25,8 +25,37 @@ export const prerender = false;
 
 <div x-data="adminDashboard()" x-init="init()" class="flex min-h-screen">
 
+  <!-- LOGIN SCREEN -->
+  <div x-show="!authenticated" class="flex items-center justify-center min-h-screen w-full bg-zinc-50">
+    <div class="bg-white rounded-xl border border-zinc-200 shadow-xl w-full max-w-sm p-8">
+      <div class="text-center mb-6">
+        <h1 class="text-xl font-bold tracking-tight">TBM Admin</h1>
+        <p class="text-sm text-zinc-500 mt-1">Masuk ke panel admin</p>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-zinc-700 mb-1.5">Username</label>
+          <input x-model="loginForm.username" type="text" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors" placeholder="admin">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-zinc-700 mb-1.5">Password</label>
+          <input x-model="loginForm.password" type="password" class="w-full px-3 py-2 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-950/10 focus:border-zinc-400 transition-colors" placeholder="••••••••">
+        </div>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input x-model="loginForm.remember" type="checkbox" class="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-950/10">
+          <span class="text-sm text-zinc-600">Ingat saya selama 30 hari</span>
+        </label>
+        <div x-show="loginError" class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2" x-text="loginError"></div>
+        <button @click="doLogin()" :disabled="loginLoading" class="w-full px-4 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 disabled:opacity-50 transition-colors">
+          <span x-show="!loginLoading">Masuk</span>
+          <span x-show="loginLoading">Memproses...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- SIDEBAR -->
-  <aside class="w-64 bg-white border-r border-zinc-200 flex flex-col shrink-0 fixed h-full">
+  <aside x-show="authenticated" class="w-64 bg-white border-r border-zinc-200 flex flex-col shrink-0 fixed h-full">
     <div class="px-6 py-5 border-b border-zinc-200">
       <h1 class="font-semibold text-base">TBM Admin</h1>
       <p class="text-xs text-zinc-500 mt-0.5">Tanah Bumbu Mengaji</p>
@@ -58,7 +87,7 @@ export const prerender = false;
   </aside>
 
   <!-- MAIN CONTENT -->
-  <main class="flex-1 ml-64 p-8">
+  <main x-show="authenticated" class="flex-1 ml-64 p-8">
 
     <!-- TOAST -->
     <div x-show="toast" x-transition class="fixed top-6 right-6 z-50 bg-zinc-900 text-white text-sm font-medium px-4 py-2.5 rounded-lg shadow-lg">
@@ -331,6 +360,11 @@ export const prerender = false;
 <script is:inline>
 function adminDashboard() {
   return {
+    authenticated: false,
+    loginForm: { username: '', password: '', remember: true },
+    loginError: '',
+    loginLoading: false,
+
     activeTab: 'settings',
     saving: false,
     toast: false,
@@ -361,7 +395,35 @@ function adminDashboard() {
     marqueeText: '',
 
     async init() {
-      await this.loadAll();
+      try {
+        const res = await fetch('/api/admin/auth');
+        if (res.ok) {
+          this.authenticated = true;
+          await this.loadAll();
+        }
+      } catch (e) {}
+    },
+
+    async doLogin() {
+      this.loginError = '';
+      this.loginLoading = true;
+      try {
+        const res = await fetch('/api/admin/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(this.loginForm),
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.authenticated = true;
+          await this.loadAll();
+        } else {
+          this.loginError = data.error || 'Login gagal';
+        }
+      } catch (e) {
+        this.loginError = 'Terjadi kesalahan';
+      }
+      this.loginLoading = false;
     },
 
     showToast(msg) {
