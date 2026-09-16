@@ -50,18 +50,22 @@ if (cached) {
 } else {
   const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${lat}&longitude=${lng}&method=20&timezonestring=${tz}`;
   try {
-    const res = await fetch(url);
-    const json = await res.json();
-    if (json.code === 200) {
-      prayerTimings = json.data.timings;
-      const h = json.data.date.hijri;
-      const hijriMonths = ['Muharram','Safar',"Rabiul Awal",'Rabiul Akhir','Jumadil Awal','Jumadil Akhir','Rajab',"Sya'ban",'Ramadhan','Syawal',"Dzulqa'dah",'Dzulhijjah'];
-      hijriDate = `${h.day} ${hijriMonths[parseInt(h.month.number, 10) - 1]} ${h.year} H`;
-      await DB.prepare(
-        'INSERT OR REPLACE INTO prayer_cache (date_key, lat, lng, data) VALUES (?, ?, ?, ?)'
-      ).bind(dateKey, lat, lng, JSON.stringify(json.data)).run();
+    const res = await fetch(url, { redirect: 'follow' });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.code === 200) {
+        prayerTimings = json.data.timings;
+        const h = json.data.date.hijri;
+        const hijriMonths = ['Muharram','Safar',"Rabiul Awal",'Rabiul Akhir','Jumadil Awal','Jumadil Akhir','Rajab',"Sya'ban",'Ramadhan','Syawal',"Dzulqa'dah",'Dzulhijjah'];
+        hijriDate = `${h.day} ${hijriMonths[parseInt(h.month.number, 10) - 1]} ${h.year} H`;
+        await DB.prepare(
+          'INSERT OR REPLACE INTO prayer_cache (date_key, lat, lng, data) VALUES (?, ?, ?, ?)'
+        ).bind(dateKey, lat, lng, JSON.stringify(json.data)).run();
+      }
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error('Failed to fetch prayer times:', e);
+  }
 }
 ---
 
@@ -288,12 +292,12 @@ function mosqueDisplay() {
     settings: _settings,
     posters: _posters,
     donations: _donations,
-    timezone: _tzInit || 'Asia/Makassar',
+    timezone: tzInit || 'Asia/Makassar',
 
     now: new Date(),
     clockText: '',
     gregorianDate: '',
-    hijriDateText: _hijriDateInit || '',
+    hijriDateText: hijriDateInit || '',
     fetchedDateKey: null,
 
     prayerList: [
