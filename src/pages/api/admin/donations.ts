@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 
-export const GET: APIRoute = async ({ locals }) => {
-  const { DB } = locals.runtime.env;
+export const GET: APIRoute = async () => {
+  const DB = env.DB;
 
   try {
     const donations = await DB.prepare(
@@ -20,8 +21,8 @@ export const GET: APIRoute = async ({ locals }) => {
   }
 };
 
-export const POST: APIRoute = async ({ request, locals }) => {
-  const { DB } = locals.runtime.env;
+export const POST: APIRoute = async ({ request }) => {
+  const DB = env.DB;
 
   try {
     const body = await request.json();

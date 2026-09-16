@@ -3,7 +3,8 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 
-const { DB } = Astro.locals.runtime.env;
+import { env } from 'cloudflare:workers';
+const DB = env.DB;
 
 // Fetch settings
 const settingsRows = await DB.prepare('SELECT key, value FROM settings').all();

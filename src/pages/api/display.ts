@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 
-export const GET: APIRoute = async ({ locals }) => {
-  const { DB } = locals.runtime.env;
+export const GET: APIRoute = async () => {
+  const DB = env.DB;
 
   try {
     // Fetch settings
