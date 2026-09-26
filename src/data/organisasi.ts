@@ -20,6 +20,7 @@ export const pengurusData: Pengurus[] = [
   { nama: 'Anton Trisnanda', jabatan: 'Wakil Ketua' },
   { nama: 'Andi Rahmat', jabatan: 'Penanggung Jawab' },
   { nama: 'Firdaus', jabatan: 'Operator Media' },
+  { nama: 'Rizky Syahrindra', jabatan: 'Admin Pendukung' },
 ];
 
 export const kontributorData: string[] = [
