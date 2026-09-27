@@ -5,14 +5,14 @@ export interface Pengurus {
 
 export interface Program {
   nama: string;
-  deskripsi: string;
-  bagian: string[];
+  deskripsi?: string;
+  bagian?: string[];
 }
 
 export interface Yayasan {
   nama: string;
   logo: string;
-  program: Program;
+  programs: Program[];
 }
 
 export const pengurusData: Pengurus[] = [
@@ -20,7 +20,6 @@ export const pengurusData: Pengurus[] = [
   { nama: 'Anton Trisnanda', jabatan: 'Wakil Ketua' },
   { nama: 'Andi Rahmat', jabatan: 'Penanggung Jawab' },
   { nama: 'Firdaus', jabatan: 'Operator Media' },
-  { nama: 'Rizky Syahrindra', jabatan: 'Admin Pendukung' },
 ];
 
 export const kontributorData: string[] = [
@@ -30,25 +29,35 @@ export const kontributorData: string[] = [
   'Randy',
   'Ikhsan',
   'Badri',
+  'Rizky Syahrindra',
+  'Abu Azzam',
+  'Afri',
 ];
 
 export const yayasanData: Yayasan[] = [
   {
     nama: 'Yayasan Ibnu Abbas Tanah Bumbu',
     logo: '/yayasan-ibnu-abbas.png',
-    program: {
-      nama: 'Media Tanah Bumbu Mengaji',
-      deskripsi: 'Platform Dakwah Digital',
-      bagian: ['Ruang Ibrah Borneo', 'Publikasi & Sosmed'],
-    },
+    programs: [
+      {
+        nama: 'Media Tanah Bumbu Mengaji',
+        deskripsi: 'Platform Dakwah Digital',
+        bagian: ['Ruang Ibrah Borneo', 'Publikasi & Sosmed'],
+      },
+    ],
   },
   {
     nama: 'Yayasan Tambang Ilmu Hasanah',
     logo: '/yayasan-tambang-ilmu.png',
-    program: {
-      nama: 'Kaifa Rumah Belajar',
-      deskripsi: 'Program Edukasi & Belajar',
-      bagian: ['Komunitas Belajar', 'Tahfidz & Pembinaan'],
-    },
+    programs: [
+      {
+        nama: 'Kaifa Rumah Belajar',
+        deskripsi: 'Program Edukasi & Belajar',
+        bagian: ['Komunitas Belajar', 'Tahfidz & Pembinaan'],
+      },
+      {
+        nama: 'Rukun Kematian',
+      },
+    ],
   },
 ];
