@@ -30,7 +30,7 @@ export const kontributorData: string[] = [
   'Ikhsan',
   'Badri',
   'Rizky Syahrindra',
-  'Abu Azzam',
+  'Abu Nizam',
   'Afri',
 ];
 
